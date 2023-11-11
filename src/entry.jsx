@@ -1,4 +1,4 @@
-import { useRouteData, useRoutes, A } from "@solidjs/router";
+import { useRouteData, useRoutes, useParams, A } from "@solidjs/router";
 import { createResource } from "solid-js";
 
 const ROUTES = [
@@ -37,10 +37,17 @@ const ROUTES = [
         path: "/:id",
         component: () => {
           const data = useRouteData();
+          /**
+           * using a `<Show keyed>` re-renders the component
+           * but does not triggers the Data Function, so data is stale.
+           */
+          const p = useParams();
 
           return (
-            <>
-              <h2>child {data.current}</h2>
+            <Show when={p.id} keyed>
+              <h2>
+                child {data.current} + {Math.random()}
+              </h2>
               <ul>
                 <li>
                   <A href={`/child/${data.link}`}>soft navigate to sibling</A>{" "}
@@ -50,7 +57,7 @@ const ROUTES = [
                   <a href={`/child/${data.link}`}>hard navigate to sibling</a>
                 </li>
               </ul>
-            </>
+            </Show>
           );
         },
         data: ({ params, data }) => {
